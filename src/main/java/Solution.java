@@ -3,23 +3,29 @@ import java.util.Map;
 
 class Solution {
     public int longestCommonPrefix(int[] arr1, int[] arr2) {
-        Trie trie = new Trie();
-        for(int i = 0; i < arr1.length; i++) {
-            trie.insert("" + arr1[i]);
-        }
-        int res = 0;
-        for(int x : arr2) {
-            res = Math.max(res, trie.startsWith("" + x));
+        Trie trie1 = new Trie();
+        for(int x : arr1) {
+            trie1.insert(String.valueOf(x));
         }
 
+        Trie trie2 = new Trie();
+        for(int x : arr2) {
+            trie2.insert(String.valueOf(x));
+        }
+
+        int res = 0;
+        for(int x : arr1) {
+            res = Math.max(res, trie2.search(String.valueOf(x)) );
+        }
+        for(int x : arr2) {
+            res = Math.max( res, trie1.search(String.valueOf(x)) );
+        }
         return res;
     }
 }
 
-
 class Trie {
     TrieNode root;
-
 
     public Trie() {
         root = new TrieNode('0');
@@ -31,9 +37,7 @@ class Trie {
         for (int i = 0; i < wordLength; i++) {
             if(!temp.children.containsKey(word.charAt(i))){
                 TrieNode node = new TrieNode(word.charAt(i));
-                node.d = temp.d + 1;
                 temp.children.put(word.charAt(i), node);
-
             }
             temp = temp.children.get(word.charAt(i));
             if(i == wordLength - 1){
@@ -43,21 +47,23 @@ class Trie {
 
     }
 
-
-    public int startsWith(String prefix) {
+    public int search(String word) {
         TrieNode temp = root;
-        for (int i = 0; i < prefix.length(); i++) {
-            if(temp.children.containsKey(prefix.charAt(i))){
-                temp = temp.children.get(prefix.charAt(i));
-            }else return temp.d;
+        int c = 0;
+        for (int i = 0; i < word.length(); i++) {
+            if(temp.children.containsKey(word.charAt(i))){
+                temp = temp.children.get(word.charAt(i));
+                c++;
+            }else return c;
         }
-        return temp.d;
+        return c;
     }
+
+    
 }
 
 class TrieNode{
     char value;
-    int d = 0;
     Map<Character, TrieNode> children = new HashMap<>();
     boolean isTerminal;
 
@@ -66,7 +72,3 @@ class TrieNode{
         this.isTerminal = false;
     }
 }
-
-
-
-
